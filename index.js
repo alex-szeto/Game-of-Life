@@ -1,16 +1,18 @@
 let clicking = false
 
-let grid = [...Array(20)].map(e => Array(20).fill(false))
+let grid = [...Array(25)].map(e => Array(25).fill(false))
 let totalCells = 0
 let activeCells = 0
 let deadCells = 0
 let started = false
+let cache
+let game //used to set interval
 
 let displayGrid = $("<div></div>")
 displayGrid.attr("id", "grid")
 
-for(let i = 0; 20 > i; i++){
-    for(let j = 0; 20 > j; j++){
+for(let i = 0; 25 > i; i++){
+    for(let j = 0; 25 > j; j++){
         let newGridElement = $("<div></div>")
         newGridElement.attr("class", "gridElement inactive")
         newGridElement.attr("id",`${i}_${j}`)
@@ -21,11 +23,31 @@ for(let i = 0; 20 > i; i++){
 deadCells = totalCells
 
 
-$("#root").append(displayGrid)
+$("#main").append(displayGrid)
+
+
 
 $("#onOff").on("click", (event) => {
     started = !started
-    started ? $(event.target).text("Pause") : $(event.target).text("Resume Simulation")
+    let log = $("<div></div>")
+    log.attr("class", "outputElement")
+
+    if(cache == undefined){
+        log.html("<strong>Simulation Started</strong>")
+    }
+    else if(started && cache != activeCells){
+        log.html(`<strong>Game Unpaused</strong> | <span class="positive"> +${activeCells-cache}</span>`)
+    }else if(started){
+        log.html(`<strong>Game Unpaused</strong> | 0`)
+    }else{
+        log.html(`<strong>Game Paused</strong>`)
+    }
+
+    cache = activeCells
+
+    $("#output").prepend(log)
+
+    started ? $(event.target).text("Pause") && onInterval() : $(event.target).text("Resume Simulation") && offInterval()
 })
 
 
@@ -67,21 +89,26 @@ function newActiveElement(id){
 function nextGeneration(){
     if(!started) return
     let newGrid = JSON.parse(JSON.stringify(grid))
-
-    for(let i = 0; 20 > i; i++){
-        for(let j = 0; 20 > j; j++){
+    let log = $("<div></div>")
+    log.attr("class", "outputElement")
+    //log.text
+    
+    //.text(`Change in alive cells: ${activeCells - newActiveCells}`)
+    
+    for(let i = 0; 25 > i; i++){
+        for(let j = 0; 25 > j; j++){
             let neighbors = 0
             
             if(i-1 >= 0 && grid[i-1][j] == true) neighbors++
             if(i+1 != grid.length && grid[i+1][j] == true) neighbors++
             if(j-1 >= 0 && grid[i][j-1] == true) neighbors++
             if(j+1 != grid[i].length && grid[i][j+1] == true ) neighbors++
-
+            
             if(i-1 >= 0 && j-1 >=0 && grid[i-1][j-1] == true) neighbors++
             if(i+1 != grid.length && j+1 != grid.length && grid[i+1][j+1] == true) neighbors++
             if(i+1 != grid.length && j-1 >= 0 && grid[i+1][j-1] == true) neighbors++
             if(i-1 >= 0 && j+1 != grid.length && grid[i-1][j+1] == true ) neighbors++
-
+            
             if(neighbors === 3 && grid[i][j] === false){ //Any dead cell with 3 neighbors comes alive
                 newGrid[i][j] = true 
             } else if(grid[i][j] == true && 4 > neighbors && neighbors >= 2){
@@ -89,17 +116,17 @@ function nextGeneration(){
             } else { //All other cases result in false
                 newGrid[i][j] = false
             }
-
+            
         }
     }
-
+    
     grid = newGrid
-
+    
     let newActiveCells = 0
     let newDeadCells = 0
-
-    for(let i = 0; 20 > i; i++){
-        for(let j = 0; 20 > j; j++){
+    
+    for(let i = 0; 25 > i; i++){
+        for(let j = 0; 25 > j; j++){
             if(grid[i][j] == true){
                 $("#"+i+"_"+j).attr("class", "gridElement active")
                 newActiveCells++
@@ -107,10 +134,30 @@ function nextGeneration(){
                 $("#"+i+"_"+j).attr("class", "gridElement inactive")
                 newDeadCells++
             }
-
+            
         }
     }
+    
+    if(deadCells-newDeadCells > 0){
+        log.html(`Generation ${$("#genCount").text()} | <span class="positive"> +${deadCells-newDeadCells}</span>`)
+    }else if(deadCells-newDeadCells == 0){
+        log.html(`Generation ${$("#genCount").text()} | ${activeCells-newActiveCells}`)
+    }
+    else{
+        log.html(`Generation ${$("#genCount").text()} | <span class="negative"> -${activeCells-newActiveCells}</span>`)
+    }
 
+    /*let aliveCount = $("<li><li>")
+    aliveCount.text(`Change in alive cells: ${activeCells - newActiveCells}`)
+    log.append(aliveCount)
+    
+    let deathCount = $("<li><li>")
+    deathCount.text(`Change in dead cells: ${deadCells - newDeadCells}`)
+    log.append(deathCount)*/
+    
+    
+    $("#output").prepend(log)
+    
     activeCells = newActiveCells
     deadCells = newDeadCells
     updateCounter(newActiveCells, newDeadCells, true)
@@ -126,5 +173,15 @@ function updateCounter(newActive, newDead, updateGen=false){
     $("#genCount").text(newGen)
 }
 
-console.log(parseInt($("#genCount").text()) + 1)
-setInterval(nextGeneration, 1000)
+function onInterval() {
+    game = setInterval(nextGeneration, 1500)
+}
+
+function offInterval() {
+    clearInterval(game)
+}
+
+let hello = $("<div></div>")
+hello.attr("class", "hi")
+hello.text("hi")
+$("#root").append(hello)

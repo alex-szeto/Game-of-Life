@@ -8,11 +8,19 @@
     <title>Document</title>
 </head>
     <body id="root">
-        <span>Generation: <span id="genCount">0</span> |</span> 
-        <span>Active Cells: <span id="activeCount">0</span> |</span> 
-        <span>Dead Cells: <span id="deadCount">0</span></span> 
-        <button id="onOff">Start Simulation</button>
+        <span id="outputLog"> 
+            <div id="title">Output Log:</div>
+            <div id="output">
+            </div>
+        </span>
 
+        <div id="main">
+            <span>Generation: <span id="genCount">0 (Intial)</span> |</span> 
+            <span>Active Cells: <span id="activeCount">0</span> |</span> 
+            <span>Dead Cells: <span id="deadCount">625</span></span> 
+
+            <button id="onOff">Start Simulation</button>
+        </div>
     </body>
 
     <script src="https://code.jquery.com/jquery-2.1.1.js"></script>
