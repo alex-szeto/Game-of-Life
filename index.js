@@ -91,9 +91,7 @@ function nextGeneration(){
     let newGrid = JSON.parse(JSON.stringify(grid))
     let log = $("<div></div>")
     log.attr("class", "outputElement")
-    //log.text
-    
-    //.text(`Change in alive cells: ${activeCells - newActiveCells}`)
+
     
     for(let i = 0; 25 > i; i++){
         for(let j = 0; 25 > j; j++){
@@ -146,15 +144,6 @@ function nextGeneration(){
     else{
         log.html(`Generation ${$("#genCount").text()} | <span class="negative"> -${activeCells-newActiveCells}</span>`)
     }
-
-    /*let aliveCount = $("<li><li>")
-    aliveCount.text(`Change in alive cells: ${activeCells - newActiveCells}`)
-    log.append(aliveCount)
-    
-    let deathCount = $("<li><li>")
-    deathCount.text(`Change in dead cells: ${deadCells - newDeadCells}`)
-    log.append(deathCount)*/
-    
     
     $("#output").prepend(log)
     
