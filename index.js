@@ -181,7 +181,3 @@ function offInterval() {
     clearInterval(game)
 }
 
-let hello = $("<div></div>")
-hello.attr("class", "hi")
-hello.text("hi")
-$("#root").append(hello)
